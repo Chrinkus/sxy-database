@@ -1,0 +1,11 @@
+# Project
+build/
+libs/
+
+# Vim
+*.swo
+*.swp
+
+# MacOS
+.DS_Store
+
