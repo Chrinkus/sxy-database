@@ -21,6 +21,7 @@ bool Database::connect(const std::string& db_name)
         return false;
     } else {
         std::cout << "Database " << db_name << " opened successfully\n";
+        return true;
     }
 }
 

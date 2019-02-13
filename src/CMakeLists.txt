@@ -1,6 +1,6 @@
-add_library(sqlite3 STATIC ${SQLITE_DIR}/sqlite3.c ${SQLITE_DIR}/sqlite3.h)
-target_link_libraries(sqlite3 PRIVATE Threads::Threads)
-target_link_libraries(sqlite3 PRIVATE -ldl)
+#add_library(sqlite3 STATIC ${SQLITE_DIR}/sqlite3.c ${SQLITE_DIR}/sqlite3.h)
+#target_link_libraries(sqlite3 PRIVATE Threads::Threads)
+#target_link_libraries(sqlite3 PRIVATE -ldl)
 
 add_library(sxy_db STATIC Database.cpp
     ${PROJECT_SOURCE_DIR}/include/Database.hpp)

@@ -6,14 +6,12 @@ endif()
 
 project(Shixxy_db)
 
-set(SQLITE_DIR ${PROJECT_SOURCE_DIR}/libs/sqlite3)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+#set(THREADS_PREFER_PTHREAD_FLAG ON)
+#find_package(Threads REQUIRED)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${SQLITE_DIR})
+include_directories(include)
 
 add_subdirectory(src)
 #add_subdirectory(test)
