@@ -22,3 +22,7 @@ set_target_properties(sxy_db PROPERTIES PUBLIC_HEADER "${HEADERS}")
 install(TARGETS sxy_db
         LIBRARY DESTINATION ~/dev/lib
         PUBLIC_HEADER DESTINATION ~/dev/include/shixxy)
+
+add_subdirectory(tests)
+
+enable_testing()
