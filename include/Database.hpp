@@ -15,6 +15,8 @@ public:
 
     ~Database();
 
+    sqlite3* data() const { return db; }
+
     bool connect(const std::string& db_name);
 
 private:

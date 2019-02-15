@@ -5,15 +5,20 @@ if (${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 project(Shixxy_db)
-
-#set(THREADS_PREFER_PTHREAD_FLAG ON)
-#find_package(Threads REQUIRED)
+set(CMAKE_BUILD_TYPE Release)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
 include_directories(include)
+file(GLOB SOURCES "src/*.cpp")
+file(GLOB HEADERS "include/*.hpp")
 
-add_subdirectory(src)
-#add_subdirectory(test)
+add_library(sxy_db SHARED ${SOURCES})
+target_compile_features(sxy_db PRIVATE cxx_std_14)
+target_link_libraries(sxy_db PRIVATE sqlite3)
 
-#enable_testing()
+set_target_properties(sxy_db PROPERTIES PUBLIC_HEADER "${HEADERS}")
+
+install(TARGETS sxy_db
+        LIBRARY DESTINATION ~/dev/lib
+        PUBLIC_HEADER DESTINATION ~/dev/include/shixxy)
