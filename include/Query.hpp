@@ -14,13 +14,15 @@ public:
 
     ~Query();
 
-    bool prepare(const std::string& stmt);
+    std::string last_query() const;
+    std::string last_error() const;
 
+    bool prepare(const std::string& sql);
     bool exec();
 
 private:
     const Database& db;
-    sqlite3_stmt* pq = nullptr;
+    sqlite3_stmt* pstmt = nullptr;
 };
 
 }

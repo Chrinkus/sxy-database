@@ -1,6 +1,5 @@
 #include "Query.hpp"
 #include "Database.hpp"
-#include <iostream>
 
 namespace Sxy {
 
@@ -11,35 +10,31 @@ Query::Query(const Database& rdb)
 
 Query::~Query()
 {
-    sqlite3_finalize(pq);
+    sqlite3_finalize(pstmt);
 }
 
-bool Query::prepare(const std::string& stmt)
+std::string Query::last_query() const
 {
-    int rc = sqlite3_prepare_v2(db.data(), stmt.data(), -1, &pq, nullptr);
+    return std::string{sqlite3_sql(pstmt)};
+}
 
-    if (rc != SQLITE_OK) {
-        std::cerr << "Could not prepare query [" << rc << "]:\n"
-                  << stmt << '\n'
-                  << sqlite3_errmsg(db.data()) << '\n';
-        return false;
-    } else {
-        std::cerr << "Statement prepared successfully\n";
-        return true;
-    }
+std::string Query::last_error() const
+{
+    return std::string{sqlite3_errmsg(db.data())};
+}
+
+bool Query::prepare(const std::string& sql)
+{
+    int rc = sqlite3_prepare_v2(db.data(), sql.data(), -1, &pstmt, nullptr);
+
+    return rc == SQLITE_OK ? true : false;
 }
 
 bool Query::exec()
 {
-    int rc = sqlite3_step(pq);
+    int rc = sqlite3_step(pstmt);
 
-    if (rc != SQLITE_DONE) {
-        std::cerr << "Could not execute prepared statement\n";
-        return false;
-    } else {
-        std::cerr << "Statement executed successfully\n";
-        return true;
-    }
+    return rc == SQLITE_DONE ? true : false;
 }
 
 }
