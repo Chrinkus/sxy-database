@@ -45,15 +45,11 @@ TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
     db.connect(":memory:");
 
     Sxy::Query query1 {db};
-    query1.prepare("INSERT INTO missing_table (name) VALUES ('Error');");
-    query1.exec();
-
+    query1.exec("INSERT INTO missing_table (name) VALUES ('Error');");
     REQUIRE(query1.last_error() == "no such table: missing_table");
 
     Sxy::Query query2 {db};
-    query2.prepare("CREATE TABLE dogs (name TEXT);");
-    query2.exec();
-
+    query2.exec("CREATE TABLE dogs (name TEXT);");
     REQUIRE(query2.last_query() == "CREATE TABLE dogs (name TEXT);");
 }
 
@@ -62,18 +58,14 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
     db.connect(":memory:");
 
     Sxy::Query q_create {db};
-    q_create.prepare("CREATE TABLE birds (name TEXT);");
-    q_create.exec();
+    q_create.exec("CREATE TABLE birds (name TEXT);");
 
     Sxy::Query q_insert1 {db};
-    q_insert1.prepare("INSERT INTO birds (name) VALUES ('Cardinal');");
-    q_insert1.exec();
+    q_insert1.exec("INSERT INTO birds (name) VALUES ('Cardinal');");
     Sxy::Query q_insert2 {db};
-    q_insert2.prepare("INSERT INTO birds (name) VALUES ('Chickadee');");
-    q_insert2.exec();
+    q_insert2.exec("INSERT INTO birds (name) VALUES ('Chickadee');");
     Sxy::Query q_insert3 {db};
-    q_insert3.prepare("INSERT INTO birds (name) VALUES ('Robin');");
-    q_insert3.exec();
+    q_insert3.exec("INSERT INTO birds (name) VALUES ('Robin');");
 
     SECTION("Query::step iterates the correct number of times") {
         int count = 0;
@@ -95,9 +87,6 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
         }
         REQUIRE(vs.size() == 3);
         REQUIRE(vs.front() == "Cardinal");
-        for (const auto& s : vs) {
-            std::cout << s << '\n';
-        }
     }
 }
 
@@ -107,12 +96,10 @@ TEST_CASE("Query::step can be used to retrieve integer data",
     db.connect(":memory:");
 
     Sxy::Query q_create {db};
-    q_create.prepare("CREATE TABLE fav_nums (num INTEGER);");
-    q_create.exec();
+    q_create.exec("CREATE TABLE fav_nums (num INTEGER);");
 
     Sxy::Query q_insert1 {db};
-    q_insert1.prepare("INSERT INTO fav_nums (num) VALUES (37);");
-    q_insert1.exec();
+    q_insert1.exec("INSERT INTO fav_nums (num) VALUES (37);");
 
     SECTION("Query::step can retrieve integers") {
         Sxy::Query query {db};
@@ -124,14 +111,11 @@ TEST_CASE("Query::step can be used to retrieve integer data",
     }
 
     Sxy::Query q_insert2 {db};
-    q_insert2.prepare("INSERT INTO fav_nums (num) VALUES (10);");
-    q_insert2.exec();
+    q_insert2.exec("INSERT INTO fav_nums (num) VALUES (10);");
     Sxy::Query q_insert3 {db};
-    q_insert3.prepare("INSERT INTO fav_nums (num) VALUES (2);");
-    q_insert3.exec();
+    q_insert3.exec("INSERT INTO fav_nums (num) VALUES (2);");
     Sxy::Query q_insert4 {db};
-    q_insert4.prepare("INSERT INTO fav_nums (num) VALUES (13);");
-    q_insert4.exec();
+    q_insert4.exec("INSERT INTO fav_nums (num) VALUES (13);");
 
     SECTION("Query::step can be used to fill a vector") {
         std::vector<int> vi;
@@ -141,11 +125,9 @@ TEST_CASE("Query::step can be used to retrieve integer data",
         while (query.step()) {
             vi.push_back(query.value("num").to_int());
         }
-
         REQUIRE(vi.size() == 4);
 
         int sum = std::accumulate(std::begin(vi), std::end(vi), 0);
-
         REQUIRE(sum == 62);
     }
 }
@@ -181,11 +163,9 @@ TEST_CASE("Query::step can be used to retrieve floating-point data") {
         while (query.step()) {
             vd.push_back(query.value("score").to_double());
         }
-
         REQUIRE(vd.size() == 3);
 
         double sum = std::accumulate(std::begin(vd), std::end(vd), 0.0);
-
         REQUIRE(sum == Approx(1.368));
     }
 }
