@@ -13,11 +13,9 @@ public:
     Value() = default;
     Value(sqlite3_value* p);
 
-    /*
     int to_int();
     double to_double();
     std::string to_string();
-    */
 
     explicit operator bool() const { return false; }
 
@@ -36,6 +34,7 @@ public:
 
     bool prepare(const std::string& sql);
     bool exec();
+    bool exec(const std::string& sql);
     bool step();
 
     Value value(const std::string& col_name);

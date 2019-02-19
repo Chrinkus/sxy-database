@@ -8,7 +8,6 @@ Value::Value(sqlite3_value* p)
 {
 }
 
-/*
 int Value::to_int()
 {
     return sqlite3_value_int(pval);
@@ -24,7 +23,6 @@ std::string Value::to_string()
     return std::string{
         reinterpret_cast<const char*>(sqlite3_value_text(pval))};
 }
-*/
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
@@ -62,6 +60,12 @@ bool Query::exec()
     return rc == SQLITE_DONE ? true : false;
 }
 
+bool Query::exec(const std::string& sql)
+{
+    prepare(sql);
+    return exec();
+}
+
 bool Query::step()
 {
     int rc = sqlite3_step(pstmt);
@@ -71,6 +75,11 @@ bool Query::step()
 
 Value Query::value(const std::string& col_name)
 {
+    for (int i = 0; i < sqlite3_column_count(pstmt); ++i) {
+        if (col_name == sqlite3_column_name(pstmt, i)) {
+            return Value{sqlite3_column_value(pstmt, i)};
+        }
+    }
     return Value{};
 }
 
