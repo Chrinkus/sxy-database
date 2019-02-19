@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include <shixxy/Database.hpp>
-#include <shixxy/Query.hpp>
+#include <Sxy_Database.hpp>
+#include <Sxy_Query.hpp>
 
 TEST_CASE("Query can be used to create a table", "[Query]") {
     Sxy::Database db;
@@ -58,6 +58,48 @@ TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
     query2.exec();
 
     REQUIRE(query2.last_query() == "CREATE TABLE dogs (name TEXT);");
+}
+
+TEST_CASE("Query::step can be used to return data", "[Query::step]") {
+    Sxy::Database db;
+    db.connect(":memory:");
+
+    Sxy::Query q_create {db};
+    q_create.prepare("CREATE TABLE birds (name TEXT);");
+    q_create.exec();
+
+    Sxy::Query q_insert1 {db};
+    q_insert1.prepare("INSERT INTO birds (name) VALUES ('Cardinal');");
+    q_insert1.exec();
+    Sxy::Query q_insert2 {db};
+    q_insert2.prepare("INSERT INTO birds (name) VALUES ('Chickadee');");
+    q_insert2.exec();
+    Sxy::Query q_insert3 {db};
+    q_insert3.prepare("INSERT INTO birds (name) VALUES ('Robin');");
+    q_insert3.exec();
+
+    SECTION("Query::step iterates the correct number of times") {
+        int count = 0;
+        Sxy::Query query {db};
+        query.prepare("SELECT name FROM birds;");
+        while (query.step()) {
+            ++count;
+        }
+
+        REQUIRE(count == 3);
+    }
+}
+
+TEST_CASE("Value is default constructable to implicitly false", "[Value]") {
+
+    Sxy::Value val;
+    bool b = false;
+
+    if (val) {
+        b = true;
+    }
+
+    REQUIRE(b == false);
 }
 
 /*

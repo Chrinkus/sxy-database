@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 
-#include <shixxy/Database.hpp>
-#include <shixxy/Query.hpp>
+#include <Sxy_Database.hpp>
+#include <Sxy_Query.hpp>
 
 TEST_CASE("Database successfully connects", "[Database::connect]") {
 
