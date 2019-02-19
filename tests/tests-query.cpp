@@ -169,15 +169,3 @@ TEST_CASE("Query::step can be used to retrieve floating-point data") {
         REQUIRE(sum == Approx(1.368));
     }
 }
-
-TEST_CASE("Value is default constructable to implicitly false", "[Value]") {
-
-    Sxy::Value val;
-    bool b = false;
-
-    if (val) {
-        b = true;
-    }
-
-    REQUIRE(b == false);
-}

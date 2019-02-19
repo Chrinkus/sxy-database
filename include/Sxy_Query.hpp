@@ -8,22 +8,9 @@ namespace Sxy {
 
 class Database;
 
-class Value {
-public:
-    Value() = default;
-    Value(sqlite3_value* p);
-
-    int to_int();
-    double to_double();
-    std::string to_string();
-
-    explicit operator bool() const { return false; }
-
-private:
-    sqlite3_value* pval = nullptr;
-};
-
 class Query {
+private:
+    class Value;
 public:
     Query(const Database& rdb);
 
@@ -33,15 +20,30 @@ public:
     std::string last_error() const;
 
     bool prepare(const std::string& sql);
-    bool exec();
+    bool exec() const;
     bool exec(const std::string& sql);
-    bool step();
+    bool step() const;
 
-    Value value(const std::string& col_name);
+    Value value(const std::string& col_name) const;
 
 private:
     const Database& db;
     sqlite3_stmt* pstmt = nullptr;
+};
+
+class Query::Value {
+public:
+    Value() = default;
+    Value(sqlite3_value* p);
+
+    int to_int() const;
+    double to_double() const;
+    std::string to_string() const;
+
+    explicit operator bool() const { return false; }
+
+private:
+    sqlite3_value* pval = nullptr;
 };
 
 }

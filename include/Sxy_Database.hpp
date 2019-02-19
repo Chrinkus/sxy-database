@@ -24,7 +24,7 @@ public:
     sqlite3* data() const { return db; }
 
 private:
-    sqlite3* db;
+    sqlite3* db = nullptr;
 };
 
 }   // Sxy
