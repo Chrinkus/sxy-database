@@ -51,6 +51,10 @@ TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
     Sxy::Query query2 {db};
     query2.exec("CREATE TABLE dogs (name TEXT);");
     REQUIRE(query2.last_query() == "CREATE TABLE dogs (name TEXT);");
+
+    Sxy::Query q_insert {db};
+    q_insert.exec("INSERT INTO dogs (name) VALUES ('Fraser');");
+    REQUIRE(q_insert.last_insert_id() == 1);
 }
 
 TEST_CASE("Query::step can be used to return data", "[Query::step]") {

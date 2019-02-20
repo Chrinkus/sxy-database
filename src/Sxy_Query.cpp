@@ -23,6 +23,11 @@ std::string Query::last_error() const
     return std::string{sqlite3_errmsg(db.data())};
 }
 
+int64_t Query::last_insert_id() const
+{
+    return sqlite3_last_insert_rowid(db.data());
+}
+
 bool Query::prepare(const std::string& sql)
 {
     int rc = sqlite3_prepare_v2(db.data(), sql.data(), -1, &pstmt, nullptr);
