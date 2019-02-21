@@ -64,12 +64,21 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE birds (name TEXT);");
 
+    /*
     Sxy::Query q_insert1 {db};
     q_insert1.exec("INSERT INTO birds (name) VALUES ('Cardinal');");
     Sxy::Query q_insert2 {db};
     q_insert2.exec("INSERT INTO birds (name) VALUES ('Chickadee');");
     Sxy::Query q_insert3 {db};
     q_insert3.exec("INSERT INTO birds (name) VALUES ('Robin');");
+    */
+    std::vector<std::string> vsb { "Cardinal", "Chickadee", "Robin" };
+    for (const auto& s : vsb) {
+        Sxy::Query query {db};
+        query.prepare("INSERT INTO birds (name) VALUES (:name);");
+        query.bind_value(":name", s);
+        query.exec();
+    }
 
     SECTION("Query::step iterates the correct number of times") {
         int count = 0;
@@ -79,7 +88,7 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
             ++count;
         }
 
-        REQUIRE(count == 3);
+        REQUIRE(count == vsb.size());
     }
 
     SECTION("Query::step can retrieve strings") {
@@ -172,4 +181,54 @@ TEST_CASE("Query::step can be used to retrieve floating-point data") {
         double sum = std::accumulate(std::begin(vd), std::end(vd), 0.0);
         REQUIRE(sum == Approx(1.368));
     }
+}
+
+TEST_CASE("Query::bind can be used to insert integers", "[Query::bind]") {
+    Sxy::Database db;
+    db.connect(":memory:");
+
+    Sxy::Query q_create {db};
+    q_create.exec("CREATE TABLE fibonacci (num INTEGER);");
+
+    std::vector<int> vi { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34 };
+    for (const auto i : vi) {
+        Sxy::Query query {db};
+        query.prepare("INSERT INTO fibonacci (num) VALUES (:num);");
+        query.bind_value(":num", i);
+        query.exec();
+    }
+
+    Sxy::Query q_select {db};
+    q_select.prepare("SELECT num FROM fibonacci;");
+    int count = 0;
+    while (q_select.step()) {
+        ++count;
+    }
+
+    REQUIRE(count == vi.size());
+}
+
+TEST_CASE("Query::bind can be used to insert doubles", "[Query::bind]") {
+    Sxy::Database db;
+    db.connect(":memory:");
+
+    Sxy::Query q_create {db};
+    q_create.exec("CREATE TABLE goals_against_avg (gaa REAL);");
+
+    std::vector<double> vd { 2.41, 2.89, 2.02, 2.37 };
+    for (const auto d : vd) {
+        Sxy::Query query {db};
+        query.prepare("INSERT INTO goals_against_avg (gaa) VALUES (:gaa);");
+        query.bind_value(":gaa", d);
+        query.exec();
+    }
+
+    Sxy::Query q_select {db};
+    q_select.prepare("SELECT gaa FROM goals_against_avg;");
+    int count = 0;
+    while (q_select.step()) {
+        ++count;
+    }
+
+    REQUIRE(count == vd.size());
 }

@@ -25,6 +25,10 @@ public:
     bool exec(const std::string& sql);
     bool step() const;
 
+    bool bind_value(const std::string& param, int value);
+    bool bind_value(const std::string& param, double value);
+    bool bind_value(const std::string& param, const std::string& value);
+
     Value value(const std::string& col_name) const;
 
 private:

@@ -55,6 +55,30 @@ bool Query::step() const
     return rc == SQLITE_ROW ? true : false;
 }
 
+bool Query::bind_value(const std::string& param, int value)
+{
+    int index = sqlite3_bind_parameter_index(pstmt, param.data());
+    int rc = sqlite3_bind_int(pstmt, index, value);
+
+    return rc == SQLITE_OK ? true : false;
+}
+
+bool Query::bind_value(const std::string& param, double value)
+{
+    int index = sqlite3_bind_parameter_index(pstmt, param.data());
+    int rc = sqlite3_bind_double(pstmt, index, value);
+
+    return rc == SQLITE_OK ? true : false;
+}
+
+bool Query::bind_value(const std::string& param, const std::string& value)
+{
+    int index = sqlite3_bind_parameter_index(pstmt, param.data());
+    int rc = sqlite3_bind_text(pstmt, index, value.data(), -1, nullptr);
+
+    return rc == SQLITE_OK ? true : false;
+}
+
 Query::Value Query::value(const std::string& col_name) const
 {
     if (!pstmt || sqlite3_column_count(pstmt) == 0) {
