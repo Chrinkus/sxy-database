@@ -7,7 +7,7 @@ endif()
 project(Shixxy_database)
 set(CMAKE_BUILD_TYPE Release)
 
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Wextra -Wpedantic -O3)
 
 include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
@@ -24,5 +24,4 @@ install(TARGETS sxy_database
         PUBLIC_HEADER DESTINATION ~/dev/include/shixxy)
 
 add_subdirectory(tests)
-
 enable_testing()
