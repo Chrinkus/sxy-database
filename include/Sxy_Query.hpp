@@ -18,7 +18,7 @@ public:
 
     std::string last_query() const;
     std::string last_error() const;
-    int64_t last_insert_id() const;
+    int last_insert_id() const;
 
     bool prepare(const std::string& sql);
     bool exec() const;

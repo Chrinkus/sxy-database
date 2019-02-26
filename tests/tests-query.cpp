@@ -52,9 +52,62 @@ TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
     query2.exec("CREATE TABLE dogs (name TEXT);");
     REQUIRE(query2.last_query() == "CREATE TABLE dogs (name TEXT);");
 
-    Sxy::Query q_insert {db};
-    q_insert.exec("INSERT INTO dogs (name) VALUES ('Fraser');");
-    REQUIRE(q_insert.last_insert_id() == 1);
+    Sxy::Query q_insert1 {db};
+    q_insert1.exec("INSERT INTO dogs (name) VALUES ('Fraser');");
+    REQUIRE(q_insert1.last_insert_id() == 1);
+
+    Sxy::Query q_insert2 {db};
+    q_insert2.exec("INSERT INTO dogs (name) VALUES ('Flynn');");
+    REQUIRE(q_insert2.last_insert_id() == 2);
+}
+
+// Bug recreation
+TEST_CASE("Query::last_insert_id returns correct values", "[last_insert_id]") {
+
+    struct Goalie {
+        Goalie(const std::string& name, int wins, double gaa)
+            : n{name}, w{wins}, g{gaa} { }
+
+        int i = -1;
+        std::string n;
+        int w;
+        double g;
+    };
+
+    Sxy::Database db;
+    db.connect(":memory:");
+
+    Sxy::Query qc {db};
+    qc.exec("CREATE TABLE goalies ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "name TEXT, "
+            "wins INTEGER, "
+            "gaa REAL);");
+
+    auto g1 = Goalie{"Ed Belfour", 484, 2.5};
+    Sxy::Query qi1 {db};
+    qi1.prepare("INSERT INTO goalies (name, wins, gaa) "
+                "VALUES (:name, :wins, :gaa);");
+    qi1.bind_value(":name", g1.n);
+    qi1.bind_value(":wins", g1.w);
+    qi1.bind_value(":gaa", g1.g);
+    qi1.exec();
+    g1.i = qi1.last_insert_id();
+
+    REQUIRE(g1.i == 1);
+
+    auto g2 = Goalie{"Martin Brodeur", 691, 2.24};
+    Sxy::Query qi2 {db};
+    qi2.prepare("INSERT INTO goalies (name, wins, gaa) "
+                "VALUES (:name, :wins, :gaa);");
+    qi2.bind_value(":name", g2.n);
+    qi2.bind_value(":wins", g2.w);
+    qi2.bind_value(":gaa", g2.g);
+    qi2.exec();
+    g2.i = qi2.last_insert_id();
+
+    REQUIRE(g2.i == 2);
+
 }
 
 TEST_CASE("Query::step can be used to return data", "[Query::step]") {
