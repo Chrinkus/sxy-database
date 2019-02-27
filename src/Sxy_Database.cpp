@@ -22,13 +22,11 @@ std::vector<std::string> Database::tables() const
 {
     std::vector<std::string> vt;
     sqlite3_stmt* pstmt = nullptr;
+    std::string sql {"SELECT name FROM sqlite_master "
+                     "WHERE type='table' "
+                     "AND name NOT LIKE 'sqlite_%';"};
 
-    sqlite3_prepare_v2(db,
-            "SELECT name FROM sqlite_master " \
-            "WHERE type='table' " \
-            "AND name NOT LIKE 'sqlite_%';",
-            -1,
-            &pstmt, nullptr);
+    sqlite3_prepare_v2(db, sql.data(), sql.size() + 1, &pstmt, nullptr);
 
     while (sqlite3_step(pstmt) != SQLITE_DONE) {
         vt.emplace_back(std::string{

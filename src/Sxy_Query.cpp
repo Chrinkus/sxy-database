@@ -30,7 +30,8 @@ int Query::last_insert_id() const
 
 bool Query::prepare(const std::string& sql)
 {
-    int rc = sqlite3_prepare_v2(db.data(), sql.data(), -1, &pstmt, nullptr);
+    int rc = sqlite3_prepare_v2(db.data(), sql.data(), sql.size() + 1, &pstmt,
+            nullptr);
 
     return rc == SQLITE_OK ? true : false;
 }
@@ -74,7 +75,8 @@ bool Query::bind_value(const std::string& param, double value)
 bool Query::bind_value(const std::string& param, const std::string& value)
 {
     int index = sqlite3_bind_parameter_index(pstmt, param.data());
-    int rc = sqlite3_bind_text(pstmt, index, value.data(), -1, nullptr);
+    int rc = sqlite3_bind_text(pstmt, index, value.data(), value.size(),
+            nullptr);
 
     return rc == SQLITE_OK ? true : false;
 }

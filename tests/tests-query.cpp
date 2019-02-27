@@ -65,13 +65,14 @@ TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
 TEST_CASE("Query::last_insert_id returns correct values", "[last_insert_id]") {
 
     struct Goalie {
+        Goalie() = default;
         Goalie(const std::string& name, int wins, double gaa)
             : n{name}, w{wins}, g{gaa} { }
 
         int i = -1;
         std::string n;
-        int w;
-        double g;
+        int w = 0;
+        double g = 0.0;
     };
 
     Sxy::Database db;
@@ -108,6 +109,28 @@ TEST_CASE("Query::last_insert_id returns correct values", "[last_insert_id]") {
 
     REQUIRE(g2.i == 2);
 
+    g2.n = "Marty Brodeur";
+    Sxy::Query qu1 {db};
+    qu1.prepare("UPDATE goalies SET name = :name WHERE id = :id;");
+    qu1.bind_value(":name", g2.n);
+    qu1.bind_value(":id", g2.i);
+    bool ok = qu1.exec();
+    REQUIRE(ok == true);
+
+    std::vector<Goalie> vgoalies;
+    Sxy::Query qs1 {db};
+    qs1.prepare("SELECT * FROM goalies;");
+    while (qs1.step()) {
+        Goalie g;
+        g.i = qs1.value("id").to_int();
+        g.n = qs1.value("name").to_string();
+        g.w = qs1.value("wins").to_int();
+        g.g = qs1.value("gaa").to_int();
+        vgoalies.push_back(g);
+    }
+
+    REQUIRE(vgoalies.size() == 2);
+    REQUIRE(vgoalies.back().n == "Marty Brodeur");
 }
 
 TEST_CASE("Query::step can be used to return data", "[Query::step]") {
@@ -117,14 +140,6 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE birds (name TEXT);");
 
-    /*
-    Sxy::Query q_insert1 {db};
-    q_insert1.exec("INSERT INTO birds (name) VALUES ('Cardinal');");
-    Sxy::Query q_insert2 {db};
-    q_insert2.exec("INSERT INTO birds (name) VALUES ('Chickadee');");
-    Sxy::Query q_insert3 {db};
-    q_insert3.exec("INSERT INTO birds (name) VALUES ('Robin');");
-    */
     std::vector<std::string> vsb { "Cardinal", "Chickadee", "Robin" };
     for (const auto& s : vsb) {
         Sxy::Query query {db};
