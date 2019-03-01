@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <numeric>
+#include <memory>
 
 #include <Sxy_Database.hpp>
 #include <Sxy_Query.hpp>
@@ -168,6 +169,8 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
         }
         REQUIRE(vs.size() == 3);
         REQUIRE(vs.front() == "Cardinal");
+        bool res = std::equal(std::begin(vsb), std::end(vsb), std::begin(vs));
+        REQUIRE(res == true);
     }
 }
 
@@ -266,14 +269,18 @@ TEST_CASE("Query::bind can be used to insert integers", "[Query::bind]") {
         query.exec();
     }
 
+    std::vector<int> viout;
     Sxy::Query q_select {db};
     q_select.prepare("SELECT num FROM fibonacci;");
     int count = 0;
     while (q_select.step()) {
         ++count;
+        viout.push_back(q_select.value("num").to_int());
     }
 
     REQUIRE(count == vi.size());
+    bool res = std::equal(std::begin(vi), std::end(vi), std::begin(viout));
+    REQUIRE(res == true);
 }
 
 TEST_CASE("Query::bind can be used to insert doubles", "[Query::bind]") {
@@ -291,12 +298,85 @@ TEST_CASE("Query::bind can be used to insert doubles", "[Query::bind]") {
         query.exec();
     }
 
+    std::vector<double> vdout;
     Sxy::Query q_select {db};
     q_select.prepare("SELECT gaa FROM goals_against_avg;");
     int count = 0;
     while (q_select.step()) {
         ++count;
+        vdout.push_back(q_select.value("gaa").to_double());
     }
 
     REQUIRE(count == vd.size());
+    bool res = std::equal(std::begin(vd), std::end(vd), std::begin(vdout));
+    REQUIRE(res == true);
+}
+
+TEST_CASE("Data can make the round trip", "[Query]") {
+
+    // Data class
+    class Game {
+    public:
+        Game() = default;
+
+        int id() const { return i; }
+        void id(int id) { i = id; }
+        std::string title() const { return t; }
+        void title(const std::string& title) { t = title; }
+        std::string developer() const { return d; }
+        void developer(const std::string& dev) { d = dev; }
+        std::string system() const { return s; }
+        void system(const std::string& system) { s = system; }
+    private:
+        int i = -1;
+        std::string t;      // title
+        std::string d;      // developer
+        std::string s;      // system
+    };
+
+    Sxy::Database db;
+    db.connect(":memory:");
+
+    Sxy::Query q_create {db};
+    q_create.exec("CREATE TABLE games ("
+                  "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                  "title TEXT, "
+                  "developer TEXT, "
+                  "system TEXT);");
+
+    // Data object
+    Game g1 {};
+    g1.title("Tomb Raider");
+    g1.developer("Crystal Dynamics");
+    g1.system("XBOX ONE");
+
+    // Data goes into the database
+    Sxy::Query q_insert {db};
+    q_insert.prepare("INSERT INTO games (title, developer, system) "
+                     "VALUES (:title, :developer, :system);");
+    q_insert.bind_value(":title", g1.title());
+    q_insert.bind_value(":developer", g1.developer());
+    q_insert.bind_value(":system", g1.system());
+    q_insert.exec();
+    g1.id(q_insert.last_insert_id());
+
+    // Data comes out of the database
+    std::vector<std::unique_ptr<Game>> vgames;
+    Sxy::Query q_select {db};
+    q_select.prepare("SELECT * FROM games;");
+    while (q_select.step()) {
+        auto g = std::make_unique<Game>();
+        g->id(q_select.value("id").to_int());
+        g->title(q_select.value("title").to_string());
+        g->developer(q_select.value("developer").to_string());
+        g->system(q_select.value("system").to_string());
+        vgames.push_back(std::move(g));
+    }
+
+    REQUIRE(vgames.size() == 1);
+    Game g2 = *vgames.front();
+    CHECK(g1.id() == g2.id());
+    CHECK(g1.title() == g2.title());
+    CHECK(g1.developer() == g2.developer());
+    CHECK(g1.system() == g2.system());
 }

@@ -76,7 +76,7 @@ bool Query::bind_value(const std::string& param, const std::string& value)
 {
     int index = sqlite3_bind_parameter_index(pstmt, param.data());
     int rc = sqlite3_bind_text(pstmt, index, value.data(), value.size(),
-            nullptr);
+            SQLITE_TRANSIENT);
 
     return rc == SQLITE_OK ? true : false;
 }
