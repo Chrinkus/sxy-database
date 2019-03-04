@@ -11,11 +11,23 @@ Database::~Database()
     }
 }
 
-bool Database::connect(const std::string& db_name)
+bool Database::open(const std::string& db_name)
 {
     int rc = sqlite3_open(db_name.data(), &db);
 
-    return rc ? false : true;
+    return rc == SQLITE_OK ? true : false;
+}
+
+bool Database::close()
+{
+    int rc = sqlite3_close(db);
+
+    if (rc == SQLITE_OK) {
+        db = nullptr;
+        return true;
+    } // no consideration for SQLITE_BUSY
+
+    return false;
 }
 
 std::vector<std::string> Database::tables() const

@@ -3,11 +3,11 @@
 #include <Sxy_Database.hpp>
 #include <Sxy_Query.hpp>
 
-TEST_CASE("Database successfully connects", "[Database::connect]") {
+TEST_CASE("Database successfully opens", "[Database::open]") {
 
     Sxy::Database db;
 
-    bool res = db.connect(":memory:");
+    bool res = db.open(":memory:");
 
     REQUIRE(res == true);
 }
@@ -15,7 +15,7 @@ TEST_CASE("Database successfully connects", "[Database::connect]") {
 TEST_CASE("Database can be queried for tables", "[Database::tables]") {
 
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     auto vtables = db.tables();
     REQUIRE(vtables.size() == 0);

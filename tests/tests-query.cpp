@@ -10,7 +10,7 @@
 
 TEST_CASE("Query can be used to create a table", "[Query]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query query {db};
     bool res_prep = query.prepare("CREATE TABLE cats ("
@@ -34,7 +34,7 @@ TEST_CASE("Query can be used to create a table", "[Query]") {
 
 TEST_CASE("Query methods return false with bad statements", "[Query]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query query {db};
     bool res_prep = query.prepare("bad query syntax");
@@ -43,7 +43,7 @@ TEST_CASE("Query methods return false with bad statements", "[Query]") {
 
 TEST_CASE("Query report returns accurate information", "[Query::last_*]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query query1 {db};
     query1.exec("INSERT INTO missing_table (name) VALUES ('Error');");
@@ -77,7 +77,7 @@ TEST_CASE("Query::last_insert_id returns correct values", "[last_insert_id]") {
     };
 
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query qc {db};
     qc.exec("CREATE TABLE goalies ("
@@ -136,7 +136,7 @@ TEST_CASE("Query::last_insert_id returns correct values", "[last_insert_id]") {
 
 TEST_CASE("Query::step can be used to return data", "[Query::step]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE birds (name TEXT);");
@@ -177,7 +177,7 @@ TEST_CASE("Query::step can be used to return data", "[Query::step]") {
 TEST_CASE("Query::step can be used to retrieve integer data",
         "[Query::step]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE fav_nums (num INTEGER);");
@@ -218,7 +218,7 @@ TEST_CASE("Query::step can be used to retrieve integer data",
 
 TEST_CASE("Query::step can be used to retrieve floating-point data") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE scores (score REAL);");
@@ -256,7 +256,7 @@ TEST_CASE("Query::step can be used to retrieve floating-point data") {
 
 TEST_CASE("Query::bind can be used to insert integers", "[Query::bind]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE fibonacci (num INTEGER);");
@@ -285,7 +285,7 @@ TEST_CASE("Query::bind can be used to insert integers", "[Query::bind]") {
 
 TEST_CASE("Query::bind can be used to insert doubles", "[Query::bind]") {
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE goals_against_avg (gaa REAL);");
@@ -335,7 +335,7 @@ TEST_CASE("Data can make the round trip", "[Query]") {
     };
 
     Sxy::Database db;
-    db.connect(":memory:");
+    db.open(":memory:");
 
     Sxy::Query q_create {db};
     q_create.exec("CREATE TABLE games ("
