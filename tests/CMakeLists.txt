@@ -8,7 +8,7 @@ set(PROJECT_LINK_DIRECTORIES libsxy_database.so)
 link_directories(${PROJECT_SOURCE_DIR}/build)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_executable(tests "${TEST_SOURCES}")
+add_executable(tests EXCLUDE_FROM_ALL "${TEST_SOURCES}")
 target_compile_features(tests PRIVATE cxx_std_14)
 target_link_libraries(tests PUBLIC Catch2::Catch2)
 target_link_libraries(tests PRIVATE sxy_database)
