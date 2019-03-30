@@ -4,7 +4,7 @@ if (${CMAKE_VERSION} VERSION_LESS 3.14)
     cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-project(Shixxy_database)
+project(sxy-database)
 set(CMAKE_BUILD_TYPE Release)
 
 add_compile_options(-Wall -Wextra -Wpedantic -O3)
@@ -13,13 +13,14 @@ include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "include/*.hpp")
 
-add_library(sxy_database SHARED ${SOURCES})
-target_compile_features(sxy_database PRIVATE cxx_std_14)
-target_link_libraries(sxy_database PRIVATE sqlite3)
+add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCES})
+target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_14)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE sqlite3)
 
-set_target_properties(sxy_database PROPERTIES PUBLIC_HEADER "${HEADERS}")
+set_target_properties(${CMAKE_PROJECT_NAME}
+        PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
-install(TARGETS sxy_database
+    install(TARGETS ${CMAKE_PROJECT_NAME}
         LIBRARY DESTINATION ~/dev/lib
         PUBLIC_HEADER DESTINATION ~/dev/include/shixxy)
 
