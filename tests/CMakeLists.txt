@@ -3,8 +3,6 @@ find_package(Catch2 REQUIRED)
 file(GLOB TEST_SOURCES "./*.cpp")
 
 set(PROJECT_LINK_DIRECTORIES "lib${CMAKE_PROJECT_NAME}.so")
-#link_directories(~/dev/lib)
-#include_directories(~/dev/include)
 link_directories(${PROJECT_SOURCE_DIR}/build)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
