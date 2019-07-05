@@ -1,4 +1,4 @@
-#include "Sxy_Database.hpp"
+#include "Database.hpp"
 
 #include <algorithm>
 

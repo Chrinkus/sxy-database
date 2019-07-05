@@ -1,5 +1,5 @@
-#include "Sxy_Query.hpp"
-#include "Sxy_Database.hpp"
+#include "Query.hpp"
+#include "Database.hpp"
 
 namespace Sxy {
 

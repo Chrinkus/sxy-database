@@ -5,8 +5,8 @@
 #include <numeric>
 #include <memory>
 
-#include <Sxy_Database.hpp>
-#include <Sxy_Query.hpp>
+#include <Database.hpp>
+#include <Query.hpp>
 
 TEST_CASE("Query can be used to create a table", "[Query]") {
     Sxy::Database db;

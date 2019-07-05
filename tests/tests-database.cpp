@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 
-#include <Sxy_Database.hpp>
-#include <Sxy_Query.hpp>
+#include <Database.hpp>
+#include <Query.hpp>
 
 TEST_CASE("Database successfully opens", "[Database::open]") {
 
