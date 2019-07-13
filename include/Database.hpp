@@ -19,7 +19,8 @@ public:
     std::vector<std::string> tables() const;
     bool has_table(const std::string& tname) const;
 
-    bool open(const std::string& db_name);
+    bool open(const std::string& db_file);
+    bool open_at(const std::string& db_path);
     bool close();
 
     sqlite3* data() const { return db; }

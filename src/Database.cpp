@@ -11,9 +11,20 @@ Database::~Database()
     }
 }
 
-bool Database::open(const std::string& db_name)
+bool Database::open(const std::string& db_file)
 {
-    int rc = sqlite3_open(db_name.data(), &db);
+    int rc = sqlite3_open(db_file.data(), &db);
+
+    return rc == SQLITE_OK ? true : false;
+}
+
+bool Database::open_at(const std::string& db_path)
+{
+    const std::string uri = std::string{"file:"} + db_path;
+    const int flags = SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE |
+        SQLITE_OPEN_CREATE;
+
+    const int rc = sqlite3_open_v2(uri.data(), &db, flags, nullptr);
 
     return rc == SQLITE_OK ? true : false;
 }
