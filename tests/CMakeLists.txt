@@ -1,5 +1,20 @@
-file(GLOB TEST_SOURCES "*.cpp")
+find_package(Catch2 REQUIRED)
 
-add_executable(tests_sxy_database "${TEST_SOURCES}")
-target_compile_features(tests_sxy_database PRIVATE cxx_std_14)
-target_link_libraries(tests_sxy_database PRIVATE sxy_database)
+# Access project headers
+include_directories("${PROJECT_SOURCE_DIR}/src")
+
+add_executable(tests_all EXCLUDE_FROM_ALL
+	tests-main.cpp
+	tests-database.cpp
+	tests-query.cpp
+)
+
+target_link_libraries(tests_all
+	PRIVATE sxy_database
+		Catch2::Catch2
+)
+
+include(CTest)
+include(Catch)
+catch_discover_tests(tests_all)
+

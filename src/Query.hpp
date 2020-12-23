@@ -1,5 +1,4 @@
-#ifndef SXY_QUERY_HPP
-#define SXY_QUERY_HPP
+#pragma once
 
 #include <sqlite3.h>
 #include <string>
@@ -53,4 +52,3 @@ private:
 
 }
 
-#endif  // SXY_QUERY_HPP

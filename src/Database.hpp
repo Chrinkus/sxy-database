@@ -1,5 +1,4 @@
-#ifndef SXY_DATABASE_HPP
-#define SXY_DATABASE_HPP
+#pragma once
 
 #include <sqlite3.h>
 #include <string>
@@ -31,4 +30,3 @@ private:
 
 }   // Sxy
 
-#endif  // SXY_DATABASE_HPP
